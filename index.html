@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+
+</head>
+
+<body onload="getLocationOnLoad()">
+    <!-- const abc = await provider.getBlockNumber()
+         console.log(abc) -->
+    <h1 id="BlockNumber">8329561</h1>
+    <button onclick="getLocation()">Try It</button>
+    <button onclick="displayLatitudeOnce()">Current Latitude</button>
+    <button onclick="displayLongitudeOnce()">Current Longitude</button>
+    <h1>Location history</h1>
+    <span id="locationList"></span>
+
+
+    <script>
+
+
+        function getLocationOnLoad() {
+            displayLatitude();
+            displayLongitude();
+            createCookieConsent();
+            window.setTimeout(function () { document.location.reload(true); }, 1500);
+
+        }
+
+        // check if geolocation is supported
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    // get current position
+                    const lat = position.coords.latitude;
+                    const long = position.coords.longitude;
+                    // store position in localStorage
+                    var location = {
+                        latitude: lat,
+                        longitude: long
+                    };
+                    var locations = JSON.parse(localStorage.getItem("locations")) || [];
+                    locations.push(location);
+                    localStorage.setItem("locations", JSON.stringify(locations));
+                    // print position to console
+                    console.log("Latitude: " + lat + ", Longitude: " + long);
+                });
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function displayLatitude() {
+            // check if geolocation is supported
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    // get current position
+                    var lat = position.coords.latitude;
+                    var long = position.coords.longitude;
+                    // create location object
+                    var location = {
+                        latitude: lat,
+                        longitude: long
+                    };
+                    // get previous location data from localStorage
+                    var locations = JSON.parse(localStorage.getItem("locations")) || [];
+                    // add current location to the list of locations
+                    locations.push(location);
+                    // update localStorage with the new list of locations
+                    localStorage.setItem("locations", JSON.stringify(locations));
+                    // update the span element with the new location data
+                    var locationList = "";
+                    for (var i = 0; i < locations.length; i++) {
+                        locationList += (i + 1) + ". Latitude: " + locations[i].latitude + ", Longitude: " + locations[i].longitude + "<br>";
+                    }
+                    document.getElementById("locationList").innerHTML = locationList;
+                });
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+            }
+        }
+
+
+        function displayLatitudeOnce() {
+            // check if geolocation is supported
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    // get current latitude
+                    var lat = position.coords.latitude;
+                    // display latitude in the span element
+                    console.log(lat);
+                });
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+            }
+        }
+        function displayLongitudeOnce() {
+            // check if geolocation is supported
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    // get current latitude
+                    var lat = position.coords.longitude;
+                    // display latitude in the span element
+                    console.log(lat);
+                });
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function createCookieConsent() {
+            // check if the cookie "locationConsent" exists
+            if (getCookie("locationConsent") === "") {
+                // create the cookie consent message
+                var message = "We would like to use your location for tracking purposes. Is that okay?";
+                var consent = confirm(message);
+                // check if the user gave consent
+                if (consent) {
+                    // create the "locationConsent" cookie with a value of "true"
+                    setCookie("locationConsent", "true", 365);
+                    // start tracking location
+                    startTracking();
+                } else {
+                    // create the "locationConsent" cookie with a value of "false"
+                    setCookie("locationConsent", "false", 365);
+                }
+            } else {
+                // check if the user previously gave consent
+                if (getCookie("locationConsent") === "true") {
+                    // start tracking location
+                    getLocation()
+                } else {
+                    console.log("User did not give consent for location tracking.");
+                }
+            }
+        }
+
+        function setCookie(name, value, days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return "";
+        }
+    </script>
+</body>
+
+</html>
